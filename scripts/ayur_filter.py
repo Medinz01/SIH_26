@@ -1,0 +1,80 @@
+import pandas as pd
+import re
+
+def format_ayurveda_csv(input_filepath: str, output_filepath: str):
+    """
+    Reads, cleans, and formats an Ayurveda NAMASTE Code CSV. It handles
+    compound codes, term prefixes, and secondary/synonym terms.
+
+    Args:
+        input_filepath (str): The path to the source Ayurveda CSV file.
+        output_filepath (str): The path where the formatted CSV will be saved.
+    """
+    print(f"Reading data from: {input_filepath}")
+
+    try:
+        df = pd.read_csv(input_filepath)
+
+        # 1. Select the columns and rename them
+        columns_to_keep = ['NAMC_CODE', 'NAMC_term_diacritical']
+        df_formatted = df[columns_to_keep].copy()
+        df_formatted = df_formatted.rename(columns={
+            'NAMC_CODE': 'namaste_code',
+            'NAMC_term_diacritical': 'name'
+        })
+        
+        # Ensure columns are string type for cleaning
+        df_formatted['namaste_code'] = df_formatted['namaste_code'].astype(str)
+        df_formatted['name'] = df_formatted['name'].astype(str)
+
+        # --- ADVANCED CLEANING STEPS ---
+        print("Cleaning 'namaste_code' and 'name' columns...")
+
+        # 2. Clean 'namaste_code': Keep only the part before the first space
+        # This turns 'SQ00 (AAB-1)' into 'SQ00'
+        df_formatted['namaste_code'] = df_formatted['namaste_code'].str.split(' ').str[0]
+
+        # 3. Clean 'name' column in multiple passes:
+        # a) Remove secondary terms/synonyms separated by two or more spaces
+        # This turns 'atipralāpaḥ   (a) pralāpakaḥ' into 'atipralāpaḥ'
+        df_formatted['name'] = df_formatted['name'].str.split(r'\s\s+').str[0]
+        
+        # b) Remove leading prefixes like '(a)', '(b)'
+        # This turns '(a) vātasañcayaḥ' into 'vātasañcayaḥ'
+        df_formatted['name'] = df_formatted['name'].str.replace(r'^\s*\([a-zA-Z]\)\s*', '', regex=True)
+
+        # c) NEW: Remove any other text in parentheses
+        # This turns 'arditaḥ (kēvalavāta)' into 'arditaḥ'
+        # The pattern \s*\([^)]*\) finds a space (optional) followed by text in parentheses
+        df_formatted['name'] = df_formatted['name'].str.replace(r'\s*\([^)]*\)', '', regex=True)
+
+        # d) Strip any remaining leading/trailing whitespace from both columns
+        df_formatted['namaste_code'] = df_formatted['namaste_code'].str.strip()
+        df_formatted['name'] = df_formatted['name'].str.strip()
+        # --- END OF CLEANING ---
+
+        # 4. Save the cleaned DataFrame to the output CSV file
+        df_formatted.to_csv(output_filepath, index=False)
+
+        print(f"✅ Successfully formatted and cleaned file, saved to: {output_filepath}")
+        print("\n--- Preview of the final, cleaned file ---")
+        # Display enough rows to see all cleaning examples
+        print(df_formatted.head(20)) 
+        print("-------------------------------------------\n")
+
+    except FileNotFoundError:
+        print(f"❌ ERROR: Could not find the input file at '{input_filepath}'")
+        print(f"Please make sure '{input_csv}' is in the same directory as the script.")
+    except KeyError as e:
+        print(f"❌ ERROR: A required column was not found in the CSV: {e}")
+        print("Please ensure your CSV contains 'NAMC_CODE' and 'NAMC_term_diacritical'.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+# --- How to use the script ---
+if __name__ == "__main__":
+    input_csv = "ayurveda.csv"
+    output_csv = "ayurveda_formatted.csv"
+
+    format_ayurveda_csv(input_csv, output_csv)
+

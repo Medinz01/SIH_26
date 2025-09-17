@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-g">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AyurFHIR Bridge</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        .results-list li { cursor: pointer; }
+        .results-list li:hover { background-color: hsl(205, 15%, 92%); }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>AyurFHIR Terminology Bridge 🌿</h1>
+        <p>Search for a NAMASTE term to generate a dual-coded FHIR Condition resource.</p>
+
+        <input type="text" id="search-box" placeholder="Start typing a term (e.g., vata, agni)...">
+
+        <ul id="results-list" class="results-list"></ul>
+
+        <button id="save-button" style="display: none;">Save to EMR</button>
+        <hr>
+
+        <h3>Generated FHIR Resource:</h3>
+        <pre><code id="fhir-output">Select a term above to see the FHIR resource.</code></pre>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+system,namaste_code,name,icd11_term,icd11_code
+Ayurveda,AYU,vyādhi-viniścayaḥ,,
+Ayurveda,DIS,vikāraḥ,,
+Ayurveda,A,dōṣavaiṣamyam,,
+Ayurveda,AA,vātavyādhiḥ,,
+Ayurveda,AAA,dōṣāvasthā,,
+Ayurveda,SR11,vātasañcayaḥ,Accumulation of Vata pattern (TM2),SR11
+Ayurveda,SR12,vātavṛddhiḥ,Aggravation of vata pattern (TM2),SR12
+Ayurveda,SR10,vātaprakopaḥ,Vitiation of vāta pattern (TM2),SR10
+Ayurveda,AAA-2.2,prāṇavātakōpaḥ,,
+Ayurveda,AAA-2.3,udānavātakōpaḥ,,
+Ayurveda,AAA-2.4,vyānavātakōpaḥ,,
+Ayurveda,AAA-2.5,samānavātakōpaḥ,,
+Ayurveda,AAA-2.6,apānavātakōpaḥ,,
+Ayurveda,SR13(AAA-3),vātaprasaraḥ,Spreading of vata pattern (TM2),SR13
+Ayurveda,SR14,vātakṣayaḥ,Depletion of vata pattern (TM2),SR14
+Ayurveda,AAB,nānātmajavātavikāraḥ,,
+Ayurveda,SQ00,atipralāpaḥ,Delirium disorder (TM2),SQ00
+Ayurveda,SQ05(AAB-2),anavasthitacittatvam,"Lack of concentration, confusion disorder (TM2)",SQ05
+Ayurveda,AAB-3,aṅgamardaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-4,aṅgaśuṣkatā,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,SP21,aṅgavibhraṁśaḥ,Atony disorder (TM2),SP21
+Ayurveda,AAB-6,arditaḥ,Facial palsy disorder (TM2),SK20
+Ayurveda,SM1P (AAB-7),arasajñatā,Ageusia disorder (TM2),SM1P
+Ayurveda,AAB-8,aśabdaśravaṇam,Tinnitus disorder (TM2),SK86
+Ayurveda,AAB-9,asvapnaḥ,Insomnia disorder (TM2),SQ24
+Ayurveda,AAB-10,akṣibhēdaḥ,,
+Ayurveda,AAB-11,akṣivyudāsaḥ,,
+Ayurveda,AAB-12,akṣiśūlaḥ,,
+Ayurveda,AAB-13,āṭōpaḥ,,
+Ayurveda,AAB-14,ākṣēpakaḥ,,
+Ayurveda,SK84 (AAB-15),uccaiḥśrutiḥ,,
+Ayurveda,AAB-16,udarāvēṣṭaḥ,Other specified abdominal cavity disorders (TM2),SM3Y
+Ayurveda,AAB-17,udāvartaḥ,Volvulus disorder (TM2),SM35
+Ayurveda,AAB-18,ūrustambhaḥ/āḍhyavātaḥ,,
+Ayurveda,AAB-19,ūrusādaḥ,,
+Ayurveda,AAB-20,ēkāṅgarōgaḥ,,
+Ayurveda,AAB-21,ōṣṭhabhēdaḥ,,
+Ayurveda,SL02 (AAB-22),kaṇṭhodhvaṃsaḥ,Hoarseness of voice disorder (TM2),SL02
+Ayurveda,AAB-23,karṇaśūlaḥ,Otalgia disorder (TM2),SK87
+Ayurveda,AAB-24,kampaḥ/vēpathuḥ,,
+Ayurveda,AAB-25,kaṣāyāsyatā,Other specified oral cavity disorders (TM2),SM1Y
+Ayurveda,SP97,klamaḥ,Severe fatigue disorder (TM2),SP97
+Ayurveda,SN41,kārṣṇyam,Discoloration of body disorder (TM2),SN41
+Ayurveda,AAB-28,kubjatvam,,
+Ayurveda,SP61,kārśyam,Emaciation disorder (TM2),SP61
+Ayurveda,SN4C,keśabhūmisphuṭanam,Scaling of scalp and forehead skin disorder (TM2),SN4C
+Ayurveda,AAB-31,khañjaḥ/khañjatvam,,
+Ayurveda,AAB-32,garbhanāśaḥ,,
+Ayurveda,SP45,grīvāstambhaḥ,Cervical spondylosis disorder (TM2),SP45
+Ayurveda,AAB-34,gudabhraṁśaḥ,Rectal prolapse disorder (TM2),SM55
+Ayurveda,SM50,gudārtiḥ,Proctalgia disorder (TM2),SM50
+Ayurveda,AAB-36,gulpha-grahaḥ,Other specified joint disorders (TM2),SP1Y
+Ayurveda,AAB-37,gr̥dhrasī,,
+Ayurveda,SK91,ghrāṇanāśaḥ,Anosmia disorder (TM2),SK91
+Ayurveda,AAB-39(SP1Y),jānubhedaḥ,Other specified joint disorders (TM2),SP1Y
+Ayurveda,AAB-40,jānuviśleṣaḥ,Other specified joint disorders (TM2),SP1Y
+Ayurveda,SP95,jr̥mbhā,Excessive yawning disorder (TM2),SP95
+Ayurveda,AAB-42(SP98),tamaḥ,Syncope disorder (TM2),SP98
+Ayurveda,AAB-43,timiraḥ,Cataract disorder (TM2),SK65
+Ayurveda,AAB-44,prasuptiḥ,Numbness disorder (TM2),SK54
+Ayurveda,AAB-45,todaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-46(SK30),daṇḍakaḥ,Seizure disorder (TM2),SK30
+Ayurveda,AAB-47,dantabhēdaḥ,Odontalgia disorder (TM2),SM1A
+Ayurveda,AAB-48,dantaśaithilyam,Other specified oral cavity disorders (TM2),SM1Y
+Ayurveda,SN60(AAB-49),nakhabhedaḥ,Brittle nails disorder (TM2),SN60
+Ayurveda,AAB-50(SN7Y),hrasvakeśaḥ,Other specified hair disorders (TM2),SN7Y
+Ayurveda,AAB-51,nirāmavātaḥ,,
+Ayurveda,AAB-52,pakṣāghātaḥ/pakṣavadhaḥ,,
+Ayurveda,AAB-53(SK21),pāṅgulyam,Paraplegia disorder (TM2),SK21
+Ayurveda,AAB-54(SK5Y),pādabhraṃśaḥ,"Other specified head, brain, nerve and movement disorders (TM2)",SK5Y
+Ayurveda,AAB-55(SP4Y),pādaśūlaḥ,"Other specified bone, joint and muscle disorders (TM2)",SP4Y
+Ayurveda,AAB-56(SP45),pādasuptatā,Cervical spondylosis disorder (TM2),SP45
+Ayurveda,SN4R(AAB-57),pāruṣyam,Roughness of skin disorder (TM2),SN4R
+Ayurveda,AAB-58,pārśvāvamardaḥ,,
+Ayurveda,AAB-59(SP9Y),piṇḍikodveṣṭanam,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-60,purīṣātigāḍhatvam,,
+Ayurveda,SP42(AAB-61),pṛṣṭha-grahaḥ,Lumbar spondylosis disorder (TM2),SP42
+Ayurveda,AAB-62,pralāpakaḥ,Delirium disorder (TM2),SQ00
+Ayurveda,AAB-63,bādhiryam,Deafness disorder (TM2),SK81
+Ayurveda,AAB-64(SP4Y),bāhuśoṣaḥ,"Other specified bone, joint and muscle disorders (TM2)",SP4Y
+Ayurveda,AAB-65(SP9Y),balahāniḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-66(SP9Y),bhedaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-67,,,
+Ayurveda,AAB-68(SM7Y),mala-apravṛtiḥ,Other specified gastro-intestinal disorders (TM2),SM7Y
+Ayurveda,AAB-69,mūkatvam,Speech disorder (TM2),SL07
+Ayurveda,AAB-70,mōhaḥ,,
+Ayurveda,AAB-71,bhramaḥ,Vertigo and giddiness disorder (TM2),SK10
+Ayurveda,AAB-72(SK5Y),bhrūvyudāsaḥ,"Other specified head, brain, nerve and movement disorders (TM2)",SK5Y
+Ayurveda,AAB-73,,,
+Ayurveda,SM1N(AAB-74),mukhaśoṣaḥ,Xerostomia disorder (TM2),SM1N
+Ayurveda,SM81(AAB-75),mūtranigrahaḥ,Retention of urine disorder (TM2),SM81
+Ayurveda,AAB-76,rajōnāśaḥ,Amenorrhoea disorder (TM2),SM90
+Ayurveda,SN42(AAB-77),raukṣyam,Dryness of skin disorder (TM2),SN42
+Ayurveda,AAB-78(SP9Y),lomaharṣaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-79(SK0Y),lalāṭabhedaḥ,Other specified headache disorders (TM2),SK0Y
+Ayurveda,AAB-80(SP1Y),trikagrahaḥ,Other specified joint disorders (TM2),SP1Y
+Ayurveda,AAB-81,vartmastambhaḥ,,
+Ayurveda,AAB-82(SK7Y),vartmasaṅkocaḥ,Other specified eye disorders (TM2),SK7Y
+Ayurveda,AAB-83(SP9Y),vakṣoparodhaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-84(SP9Y),vakṣastodaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,SK53(AAB-85),vāk-saṅgaḥ,Stammering disorder (TM2),SK53
+Ayurveda,AAB-86(SP9Y),vācālatā,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-87(SP1Y),"vātakhuḍḍatā,",Other specified joint disorders (TM2),SP1Y
+Ayurveda,AAB-88(SP9Y),vāmanatvam,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-89(SM37),viḍ-bhedaḥ,Diarrhoea disorder (TM2),SM37
+Ayurveda,AAB-90,vipādikā,"Other specified skin, nail and hair disorders (TM2)",SN9Y
+Ayurveda,AAB-91(SQ04),viṣādaḥ dīnatā,,
+Ayurveda,AAB-92(SN3Y),vṛṣaṇākṣepaḥ,Other specified urinary and reproductive system disorders (TM2),SN3Y
+Ayurveda,AAB-93(SP4Y),vaṅkṣaṇānāhaḥ,"Other specified bone, joint and muscle disorders (TM2)",SP4Y
+Ayurveda,AAB-94(SP9Y),vyathā,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-95(SL7Y),śirāsphūrtiḥ,Other specified circulatory disorders (TM2),SL7Y
+Ayurveda,AAB-96,śirōruk,Cephalalgia disorder (TM2),SK00
+Ayurveda,SN03(AAB-97),śukrakṣayaḥ,Oligospermia disorder (TM2),SN03
+Ayurveda,AAB-98,śaṅkhabhēdaḥ,,
+Ayurveda,SN07(AAB-99),śephastambhaḥ,Priapism disorder (TM2),SN07
+Ayurveda,AAB-100(SP9Y),śaityam,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-101,śyāvāruṇāsyatā,,
+Ayurveda,AAB-102,śrōṇibhēdaḥ,Hip joint pain disorder (TM2),SP13
+Ayurveda,AAB-103(SP9Y),saṅkocaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-104,svēdanāśaḥ,,
+Ayurveda,AAB-105(SP9Y),śramaḥ,Other specified disorders affecting the whole body (TM2),SP9Y
+Ayurveda,AAB-106,sarvāṅgarōgaḥ/sarvāṅgavātaḥ,,
+Ayurveda,AAB-107(SK52),stambhaḥ,Tremor disorder (TM2),SK52
+Ayurveda,AAB-108(SP4Y),hanubhedaḥ,"Other specified bone, joint and muscle disorders (TM2)",SP4Y
+Ayurveda,AAB-109,hikkā,Hiccough disorder (TM2),SM74
+Ayurveda,SL62(AAB-110),hṛddravaḥ,Palpitation disorder (TM2),SL62
+Ayurveda,SL60(AAB-111),hṛnmohaḥ,Slow heart disorder (TM2),SL60
+Ayurveda,AAC,sāmānyajavātavikāraḥ,,
+Ayurveda,AAC-1(SK30),antarāyāmaḥ,Seizure disorder (TM2),SK30
+Ayurveda,AAC-2(SK30),apatantrakaḥ,Seizure disorder (TM2),SK30
+Ayurveda,AAC-2.1,asādhya-apatantrakaḥ,,
+Ayurveda,AAC-3(SK30),apatānakaḥ,Seizure disorder (TM2),SK30
+Ayurveda,SK20(AAC-4),arditaḥ,Facial palsy disorder (TM2),SK20
+Ayurveda,AAC-4.1,ardita-pūrvarupam,,
