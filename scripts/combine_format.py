@@ -57,18 +57,22 @@ def combine_and_tag_csvs(file_paths: dict, output_filepath: str):
     print(combined_df.tail())
     print("------------------------------------\n")
 
+def main():
+    """
+    Main function to define file paths and run the combination process.
+    """
+    # Define the input files from our 'processed' directory
+    files_to_combine = {
+        'Ayurveda': 'data/processed/ayurveda_formatted.csv',
+        'Siddha': 'data/processed/siddha_formatted.csv',
+        'Unani': 'data/processed/unani_formatted.csv'
+    }
+
+    # Define the final output file in a new 'merged' directory for clarity
+    output_filename = "data/merged/combined_namaste_codes.csv"
+
+    combine_and_tag_csvs(files_to_combine, output_filename)
 
 # --- How to use the script ---
 if __name__ == "__main__":
-    # Define the input files and the system name for each
-    # The script will look for these files in the same directory it is run from.
-    files_to_combine = {
-        'Ayurveda': 'ayurveda_formatted.csv',
-        'Siddha': 'siddha_formatted.csv',
-        'Unani': 'unani_formatted.csv'
-    }
-
-    # Define the name of the final output file
-    output_filename = "combined_namaste_codes.csv"
-
-    combine_and_tag_csvs(files_to_combine, output_filename)
+    main()

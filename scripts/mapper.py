@@ -13,8 +13,8 @@ CLIENT_SECRET = "KmWdoiVii9wZhFPG7hF0AQyoh1Pnwco3MGzwmGf8hV0="
 # --- Configuration ---
 TOKEN_URL = 'https://icdaccessmanagement.who.int/connect/token'
 API_BASE_URL = 'https://id.who.int/icd'
-INPUT_FILE = 'combined_namaste_codes.csv'
-OUTPUT_FILE = 'enriched_namaste_codes_with_icd11.csv'
+INPUT_FILE = 'data/merged/combined_namaste_codes.csv'
+OUTPUT_FILE = 'data/enriched_namaste_codes_with_icd11.csv'
 
 def get_access_token():
     """Authenticates with the server and retrieves an access token."""

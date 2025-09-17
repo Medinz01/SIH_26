@@ -1,0 +1,5 @@
+{
+    "step_1_filter": true,
+    "step_2_combine": true,
+    "step_3_mapper": true
+}

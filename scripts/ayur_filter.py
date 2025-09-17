@@ -72,9 +72,12 @@ def format_ayurveda_csv(input_filepath: str, output_filepath: str):
         print(f"An unexpected error occurred: {e}")
 
 # --- How to use the script ---
-if __name__ == "__main__":
-    input_csv = "ayurveda.csv"
-    output_csv = "ayurveda_formatted.csv"
+def main():
+    """Main function to run the script's logic."""
+    input_csv = "data/raw/ayurveda.csv"
+    output_csv = "data/processed/ayurveda_formatted.csv"
 
     format_ayurveda_csv(input_csv, output_csv)
 
+if __name__ == "__main__":
+    main()

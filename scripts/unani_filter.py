@@ -67,9 +67,12 @@ def format_unani_csv(input_filepath: str, output_filepath: str):
         print(f"An unexpected error occurred: {e}")
 
 # --- How to use the script ---
-if __name__ == "__main__":
-    # Assumes your source file is named 'unani.csv'
-    input_csv = "unani.csv"
-    output_csv = "unani_formatted.csv"
+def main():
+    """Main function to run the script's logic."""
+    input_csv = "data/raw/unani.csv"
+    output_csv = "data/processed/unani_formatted.csv"
 
     format_unani_csv(input_csv, output_csv)
+
+if __name__ == "__main__":
+    main()

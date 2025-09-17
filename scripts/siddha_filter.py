@@ -67,9 +67,35 @@ def format_siddha_csv(input_filepath: str, output_filepath: str):
         print(f"An unexpected error occurred: {e}")
 
 # --- How to use the script ---
-if __name__ == "__main__":
-    # Assumes your source file is named 'siddha.csv'
-    input_csv = "siddha.csv"
-    output_csv = "siddha_formatted.csv"
+import pandas as pd
+import re
+
+def format_ayurveda_csv(input_filepath: str, output_filepath: str):
+    # ... (all the existing logic of this function remains exactly the same) ...
+    print(f"Reading data from: {input_filepath}")
+    try:
+        df = pd.read_csv(input_filepath)
+        # ... (the rest of the function is unchanged) ...
+        df_formatted.to_csv(output_filepath, index=False)
+        print(f"✅ Successfully formatted and cleaned file, saved to: {output_filepath}")
+        print("\n--- Preview of the final, cleaned file ---")
+        print(df_formatted.head(20))
+        print("-------------------------------------------\n")
+    except FileNotFoundError:
+        print(f"❌ ERROR: Could not find the input file at '{input_filepath}'")
+    except KeyError as e:
+        print(f"❌ ERROR: A required column was not found in the CSV: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+# --- FIX IS HERE ---
+def main():
+    """Main function to run the script's logic."""
+    input_csv = "data/raw/siddha.csv"
+    output_csv = "data/processed/siddha_formatted.csv"
 
     format_siddha_csv(input_csv, output_csv)
+
+if __name__ == "__main__":
+    main()
+    
