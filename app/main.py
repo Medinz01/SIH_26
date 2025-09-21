@@ -12,9 +12,8 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AyurFHIR Bridge")
 
-# --- Security Setup (Simulating ABHA Token Check) ---
+# --- Security Setup ---
 API_KEY_NAME = "X-API-Key"
-# This is our mock ABHA token/API key. In a real system, this would be a JWT.
 MOCK_ABHA_TOKEN = "abhatoken_for_sih_demo_25026"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
 
@@ -26,7 +25,7 @@ async def get_api_key(key: str = Security(api_key_header)):
             status_code=403, detail="Could not validate credentials"
         )
 
-# --- API Routes ---
+# --- Database Dependency ---
 def get_db():
     db = SessionLocal()
     try:
@@ -34,13 +33,43 @@ def get_db():
     finally:
         db.close()
 
+# --- API Routes ---
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
-@app.get("/search", response_model=List[schemas.NamasteTerm])
-def search_for_terms(term: str, db: Session = Depends(get_db)):
-    return crud.search_terms(db=db, query=term)
+# --- Terminology Search Endpoints ---
+
+@app.get("/search/namaste", response_model=List[schemas.NamasteTerm])
+def search_for_namaste_terms(term: str, db: Session = Depends(get_db)):
+    """Search for NAMASTE terms across Ayurveda, Siddha, and Unani systems."""
+    return crud.search_namaste_terms(db=db, query=term)
+
+@app.get("/search/icd11", response_model=List[schemas.IcdTerm])
+def search_for_icd_terms(term: str, db: Session = Depends(get_db)):
+    """Search for ICD-11 terms."""
+    return crud.search_icd_terms(db=db, query=term)
+
+@app.get("/search/loinc", response_model=List[schemas.LoincTerm])
+def search_for_loinc_terms(term: str, db: Session = Depends(get_db)):
+    """Search for LOINC terms."""
+    return crud.search_loinc_terms(db=db, query=term)
+
+
+# --- Mapping Endpoint ---
+
+@app.get("/map/namaste/{namaste_code}", response_model=schemas.ConceptMap)
+def get_mapping_by_namaste_code(namaste_code: str, db: Session = Depends(get_db)):
+    mapping = crud.get_mapping_for_namaste_code(db=db, namaste_code=namaste_code)
+    if mapping is None:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"No mapping found for NAMASTE code: {namaste_code}"
+        )
+    return mapping
+
+# --- FHIR and Secure Endpoints ---
 
 @app.get("/fhir/condition/{term_id}")
 def generate_fhir_condition(term_id: int, db: Session = Depends(get_db)):
@@ -49,29 +78,20 @@ def generate_fhir_condition(term_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Term not found")
 
     term_data = schemas.NamasteTerm.model_validate(db_term)
-    fhir_resource = fhir_converter.create_fhir_condition(db=db, db_term=term_data) # Pass db here
+    fhir_resource = fhir_converter.create_fhir_condition(db=db, db_term=term_data)
     return fhir_resource.dict()
 
-# --- NEW SECURE ENDPOINT ---
 @app.post("/bundle")
 def upload_encounter_bundle(
     bundle: Dict[str, Any], 
     api_key: str = Depends(get_api_key)
 ):
-    """
-    Ingests a FHIR Bundle. This endpoint is secured.
-    """
-    # This simulates our audit trail requirement.
-    print("--- AUDIT LOG ---")
+    print(f"--- AUDIT LOG ---")
     print(f"Timestamp: {datetime.utcnow().isoformat()}")
     print(f"Authenticated Principal: User with token ending in ...{api_key[-4:]}")
     print(f"Action: Ingested FHIR Bundle of type '{bundle.get('type')}' with {len(bundle.get('entry', []))} entries.")
     print("-----------------")
-
-    # In a real app, you'd save this bundle to a FHIR server or database.
-    # For the hackathon, just acknowledging receipt is enough.
     return {"status": "success", "message": "Bundle received and logged."}
-
 
 # --- Static Files Mount ---
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")

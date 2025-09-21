@@ -1,21 +1,55 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, ForeignKey, PrimaryKeyConstraint, ForeignKeyConstraint
+from sqlalchemy.orm import relationship
+from .database import Base
 
-Base = declarative_base()
-
-class NamasteTerm(Base):
-    __tablename__ = "namaste_terms"
-
+class IcdTerm(Base):
+    __tablename__ = "icd_terms"
     id = Column(Integer, primary_key=True, index=True)
     code = Column(String, unique=True, index=True)
     term = Column(String)
-    # We can add the 'system' column later if needed, keeping it simple for now.
 
+# FINAL CORRECTED VERSION of NamasteTerm
+class NamasteTerm(Base):
+    __tablename__ = "namaste_terms"
+
+    # Revert to a simple integer primary key, which is always unique.
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String, index=True) # Index for fast lookups
+    term = Column(String)
+    system = Column(String, index=True) # Index for fast lookups
+
+
+class SnomedTerm(Base):
+    __tablename__ = "snomed_terms"
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String, unique=True, index=True)
+    term = Column(String)
+
+class LoincTerm(Base):
+    __tablename__ = "loinc_terms"
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String, unique=True, index=True)
+    term = Column(String)
+
+
+# FINAL CORRECTED VERSION of ConceptMap
 class ConceptMap(Base):
     __tablename__ = "concept_map"
 
     id = Column(Integer, primary_key=True, index=True)
-    namaste_code = Column(String, index=True)
-    icd_code = Column(String)
-    icd_display = Column(String)
-    relationship = Column(String, default='equivalent')
+    
+    # The ForeignKey now points to the simple 'id' of the NamasteTerm
+    namaste_id = Column(Integer, ForeignKey("namaste_terms.id"), index=True)
+    
+    # Mappings to other code systems
+    icd_code = Column(String, ForeignKey("icd_terms.code"), nullable=True)
+    snomed_code = Column(String, ForeignKey("snomed_terms.code"), nullable=True)
+    loinc_code = Column(String, ForeignKey("loinc_terms.code"), nullable=True)
+    
+    map_relationship = Column(String, default='equivalent')
+
+    # Relationships for easier data access
+    namaste_term = relationship("NamasteTerm")
+    icd_term = relationship("IcdTerm")
+    snomed_term = relationship("SnomedTerm")
+    loinc_term = relationship("LoincTerm")
