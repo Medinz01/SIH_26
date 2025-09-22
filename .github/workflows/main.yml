@@ -17,15 +17,22 @@ jobs:
 
     # Step 2: Build and start your Docker containers in the background
     - name: Build and run containers
-      # --- THE FIX ---
-      # Use the modern 'docker compose' command (with a space)
       run: docker compose up --build -d
 
     # Step 3: Wait for the database to be ready
     - name: Wait for database
-      run: sleep 10
+      run: sleep 15 # Increased sleep time slightly for stability
 
-    # Step 4: Run your tests!
+    # --- NEW STEP ---
+    # Step 4: Seed the database with test data by running ingestion scripts
+    - name: Seed database for testing
+      run: |
+        docker compose exec api python -m scripts.ingest_icd11
+        docker compose exec api python -m scripts.ingest_loinc
+        docker compose exec api python -m scripts.pipeline_namaste
+    # --- END NEW STEP ---
+
+    # Step 5: Run your tests!
     - name: Run Pytest
       run: docker compose exec api pytest
 
