@@ -1,14 +1,11 @@
-import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from dotenv import load_dotenv
+from sqlalchemy.orm import sessionmaker, declarative_base # Updated import
+import os
 
-load_dotenv()
-
-# Get the database URL from the environment variable we set in docker-compose
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://ayush:hackathon_secret@db/ayur_db")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# This is the modern way to create the Base
 Base = declarative_base()
