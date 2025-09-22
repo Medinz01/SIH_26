@@ -4,9 +4,8 @@
 
 This project provides a complete, production-ready terminology service, including robust data pipelines, a powerful REST API, and a demonstration user interface.
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/your-github-username/your-repo-name/main.yml?branch=main)](https://github.com/your-github-username/your-repo-name/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Medinz01/SIH_26/main.yml?branch=main)](https://github.com/Medinz01/SIH_26/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 ---
 
 ## Key Features
