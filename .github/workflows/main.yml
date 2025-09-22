@@ -17,14 +17,15 @@ jobs:
 
     # Step 2: Build and start your Docker containers in the background
     - name: Build and run containers
-      run: docker-compose up --build -d
+      # --- THE FIX ---
+      # Use the modern 'docker compose' command (with a space)
+      run: docker compose up --build -d
 
     # Step 3: Wait for the database to be ready
-    # A simple sleep is often enough for a test environment
     - name: Wait for database
       run: sleep 10
 
     # Step 4: Run your tests!
-    # This is the same command you've been running locally
     - name: Run Pytest
-      run: docker-compose exec api pytest
+      run: docker compose exec api pytest
+
