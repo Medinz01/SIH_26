@@ -1,108 +1,88 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AyurFHIR Bridge - Terminology Explorer</title>
+    <title>AyurFHIR Bridge - Terminology Search & Map</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom scrollbar for better aesthetics */
-        .results-box::-webkit-scrollbar {
-            width: 8px;
-        }
-        .results-box::-webkit-scrollbar-track {
-            background: #f1f5f9; /* slate-100 */
-        }
-        .results-box::-webkit-scrollbar-thumb {
-            background: #cbd5e1; /* slate-300 */
-            border-radius: 4px;
-        }
-        .results-box::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; /* slate-400 */
-        }
-        .loader {
-            border-top-color: #4f46e5; /* indigo-600 */
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        /* A little custom style for better UX */
+        .search-results::-webkit-scrollbar { width: 8px; }
+        .search-results::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
+        .search-results::-webkit-scrollbar-thumb { background: #888; border-radius: 10px;}
+        .search-results::-webkit-scrollbar-thumb:hover { background: #555; }
+        .result-item:hover { background-color: #eef2ff; }
+        #mapping-result { display: none; } /* Hidden by default */
     </style>
 </head>
-<body class="bg-slate-50 flex flex-col h-full font-sans antialiased">
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 p-4 shadow-sm">
-        <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl font-bold text-slate-800">AyurFHIR Bridge</h1>
-            <p class="text-slate-500">Live Terminology Search Explorer</p>
+<body class="bg-gray-100 font-sans">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-indigo-700">AyurFHIR Bridge</h1>
+            <p class="text-lg text-gray-600 mt-2">Search and Map Medical Terminologies</p>
+        </header>
+
+        <!-- Search Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- NAMASTE Search Column -->
+            <div>
+                <label for="namaste-search" class="block text-sm font-medium text-gray-700 mb-1">NAMASTE (Ayurveda, Siddha, Unani)</label>
+                <input type="text" id="namaste-search" data-system="namaste" placeholder="e.g., Jvara, Fever..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <div id="namaste-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-gray-200"></div>
+            </div>
+            <!-- ICD-11 Search Column -->
+            <div>
+                <label for="icd11-search" class="block text-sm font-medium text-gray-700 mb-1">ICD-11</label>
+                <input type="text" id="icd11-search" data-system="icd11" placeholder="e.g., Neoplasms, Injury..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <div id="icd11-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-gray-200"></div>
+            </div>
+            <!-- LOINC Search Column -->
+            <div>
+                <label for="loinc-search" class="block text-sm font-medium text-gray-700 mb-1">LOINC</label>
+                <input type="text" id="loinc-search" data-system="loinc" placeholder="e.g., Blood pressure, Glucose..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <div id="loinc-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-gray-200"></div>
+            </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow container mx-auto p-4 md:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-            
-            <!-- NAMASTE Column -->
-            <div class="bg-white rounded-lg shadow-md border border-slate-200 flex flex-col">
-                <div class="p-4 border-b border-slate-200">
-                    <h2 class="text-lg font-semibold text-slate-700">NAMASTE Search</h2>
-                    <input type="text" id="namaste-search" placeholder="e.g., Jvara, Fever..." class="mt-2 w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+        <!-- Mapping Result Section -->
+        <div id="mapping-result" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+             <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Concept Map</h2>
+             <div class="flex flex-col md:flex-row items-stretch justify-center gap-4">
+                <!-- Source Term Card -->
+                <div class="flex-1 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                    <h3 class="font-bold text-indigo-800">Source Term (NAMASTE)</h3>
+                    <p id="map-source-term" class="text-lg text-gray-900 mt-1"></p>
+                    <p id="map-source-code" class="text-sm text-gray-500 font-mono"></p>
+                    <p id="map-source-system" class="text-xs text-indigo-500 mt-1 capitalize"></p>
                 </div>
-                <div id="namaste-results" class="results-box p-4 flex-grow overflow-y-auto h-96">
-                    <p class="text-slate-400 text-center mt-4">Start typing to search NAMASTE terms...</p>
+                
+                <!-- Arrow Icon -->
+                <div class="flex items-center justify-center text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
                 </div>
-            </div>
 
-            <!-- ICD-11 Column -->
-            <div class="bg-white rounded-lg shadow-md border border-slate-200 flex flex-col">
-                <div class="p-4 border-b border-slate-200">
-                    <h2 class="text-lg font-semibold text-slate-700">ICD-11 Search</h2>
-                    <input type="text" id="icd11-search" placeholder="e.g., Cholera, Influenza..." class="mt-2 w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                <!-- Target Term Card -->
+                <div class="flex-1 bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h3 class="font-bold text-green-800">Target Term (ICD-11)</h3>
+                    <p id="map-target-term" class="text-lg text-gray-900 mt-1"></p>
+                    <p id="map-target-code" class="text-sm text-gray-500 font-mono"></p>
                 </div>
-                <div id="icd11-results" class="results-box p-4 flex-grow overflow-y-auto h-96">
-                     <p class="text-slate-400 text-center mt-4">Start typing to search ICD-11 terms...</p>
-                </div>
-            </div>
-
-            <!-- LOINC Column -->
-            <div class="bg-white rounded-lg shadow-md border border-slate-200 flex flex-col">
-                <div class="p-4 border-b border-slate-200">
-                    <h2 class="text-lg font-semibold text-slate-700">LOINC Search</h2>
-                    <input type="text" id="loinc-search" placeholder="e.g., Blood pressure, Glucose..." class="mt-2 w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                </div>
-                <div id="loinc-results" class="results-box p-4 flex-grow overflow-y-auto h-96">
-                     <p class="text-slate-400 text-center mt-4">Start typing to search LOINC terms...</p>
-                </div>
-            </div>
-
+             </div>
+             <p id="map-relationship" class="text-center text-sm text-gray-500 mt-4"></p>
         </div>
-    </main>
-    
+        <div id="mapping-not-found" class="hidden text-center text-gray-500 mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+            No pre-defined map found for this term.
+        </div>
+
+    </div>
+
     <script>
-        // --- Configuration ---
-        const API_BASE_URL = window.location.origin; // Uses the same host as the frontend
-        const DEBOUNCE_DELAY = 300; // ms
-
-        // --- Element References ---
-        const inputs = {
-            namaste: document.getElementById('namaste-search'),
-            icd11: document.getElementById('icd11-search'),
-            loinc: document.getElementById('loinc-search')
-        };
-        const resultsContainers = {
-            namaste: document.getElementById('namaste-results'),
-            icd11: document.getElementById('icd11-results'),
-            loinc: document.getElementById('loinc-results')
-        };
-
-        // --- Utility Functions ---
-
-        /**
-         * Debounce function to limit API calls while typing.
-         * @param {Function} func The function to debounce.
-         * @param {number} delay The delay in milliseconds.
-         * @returns {Function} The debounced function.
-         */
+        const inputs = document.querySelectorAll('input[type="text"]');
+        
+        // Debounce function to limit API calls while typing
         const debounce = (func, delay) => {
             let timeoutId;
             return (...args) => {
@@ -113,103 +93,88 @@
             };
         };
 
-        /**
-         * Creates and returns a loader element.
-         * @returns {HTMLElement} The loader div.
-         */
-        const createLoader = () => {
-            const loader = document.createElement('div');
-            loader.className = 'flex justify-center items-center h-full';
-            loader.innerHTML = `<div class="loader w-8 h-8 border-4 border-slate-200 rounded-full"></div>`;
-            return loader;
-        };
-        
-        /**
-         * Renders the search results in the specified container.
-         * @param {string} system - The terminology system (e.g., 'namaste').
-         * @param {Array} data - The array of results from the API.
-         */
-        const renderResults = (system, data) => {
-            const container = resultsContainers[system];
-            container.innerHTML = ''; // Clear previous results or loader
-
-            if (!data || data.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center mt-4">No results found.</p>`;
+        const search = async (system, query) => {
+            const resultsContainer = document.getElementById(`${system}-results`);
+            if (!query) {
+                resultsContainer.innerHTML = '';
                 return;
             }
 
-            const fragment = document.createDocumentFragment();
-            data.forEach(item => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'p-3 border-b border-slate-100 hover:bg-slate-50 transition-colors duration-150 rounded-md';
-                
-                let systemBadge = '';
-                if (system === 'namaste' && item.system) {
-                    const systemColors = {
-                        'ayurveda': 'bg-green-100 text-green-800',
-                        'siddha': 'bg-blue-100 text-blue-800',
-                        'unani': 'bg-purple-100 text-purple-800'
-                    };
-                    const colorClass = systemColors[item.system.toLowerCase()] || 'bg-slate-100 text-slate-800';
-                    systemBadge = `<span class="text-xs font-semibold px-2 py-0.5 rounded-full ${colorClass}">${item.system}</span>`;
+            resultsContainer.innerHTML = '<div class="p-4 text-gray-500">Searching...</div>';
+            
+            try {
+                const response = await fetch(`/search/${system}?term=${query}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    resultsContainer.innerHTML = '<div class="p-4 text-gray-500">No results found.</div>';
+                    return;
                 }
-
-                resultItem.innerHTML = `
-                    <p class="font-semibold text-slate-800 text-sm">${item.term}</p>
-                    <div class="flex justify-between items-center mt-1">
-                        <p class="text-xs text-slate-500 font-mono bg-slate-100 px-2 py-0.5 rounded">${item.code}</p>
-                        ${systemBadge}
+                
+                resultsContainer.innerHTML = data.map(item => `
+                    <div class="result-item p-3 border-b border-gray-200 cursor-pointer" 
+                         ${system === 'namaste' ? `onclick="fetchMap('${item.code}', '${item.system}')"` : ''}>
+                        <p class="font-semibold text-gray-800">${item.term}</p>
+                        <p class="text-sm text-gray-500 font-mono">${item.code} ${system === 'namaste' ? `<span class="capitalize text-indigo-600">(${item.system})</span>`: ''}</p>
                     </div>
-                `;
-                fragment.appendChild(resultItem);
-            });
-            container.appendChild(fragment);
+                `).join('');
+
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = '<div class="p-4 text-red-500">Error fetching results.</div>';
+            }
         };
 
-        /**
-         * Performs the API search for a given system and query.
-         * @param {string} system - The terminology system (e.g., 'namaste').
-         * @param {string} query - The search term.
-         */
-        const performSearch = async (system, query) => {
-            const container = resultsContainers[system];
-            if (query.length < 2) {
-                container.innerHTML = `<p class="text-slate-400 text-center mt-4">Start typing to search ${system.toUpperCase()} terms...</p>`;
-                return;
-            }
-
-            container.innerHTML = ''; // Clear
-            container.appendChild(createLoader()); // Show loader
+        const fetchMap = async (namasteCode, namasteSystem) => {
+            const mappingResultDiv = document.getElementById('mapping-result');
+            const notFoundDiv = document.getElementById('mapping-not-found');
+            
+            mappingResultDiv.style.display = 'none';
+            notFoundDiv.classList.add('hidden');
 
             try {
-                const response = await fetch(`${API_BASE_URL}/search/${system}?term=${encodeURIComponent(query)}`);
+                const response = await fetch(`/map?namaste_code=${encodeURIComponent(namasteCode)}&namaste_system=${encodeURIComponent(namasteSystem)}`);
+                
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                     if(response.status === 404) {
+                        notFoundDiv.classList.remove('hidden');
+                     }
+                     throw new Error('Mapping not found or server error');
                 }
+
                 const data = await response.json();
-                renderResults(system, data);
+                
+                // Populate and show the mapping card
+                document.getElementById('map-source-term').textContent = data.source_term.term;
+                document.getElementById('map-source-code').textContent = data.source_term.code;
+                document.getElementById('map-source-system').textContent = data.source_term.system;
+
+                if(data.target_term) {
+                    document.getElementById('map-target-term').textContent = data.target_term.term;
+                    document.getElementById('map-target-code').textContent = data.target_term.code;
+                } else {
+                    document.getElementById('map-target-term').textContent = 'N/A';
+                    document.getElementById('map-target-code').textContent = 'N/A';
+                }
+
+                document.getElementById('map-relationship').textContent = `Relationship: ${data.map_relationship}`;
+
+                mappingResultDiv.style.display = 'block';
+
             } catch (error) {
-                console.error(`Error fetching ${system} data:`, error);
-                container.innerHTML = `<p class="text-red-500 text-center mt-4">Error loading results. Please try again.</p>`;
+                console.error('Mapping fetch error:', error);
             }
         };
 
-        // --- Event Listener Setup ---
-        
-        // Create debounced versions of the search function for each system
-        const debouncedSearch = {
-            namaste: debounce(performSearch, DEBOUNCE_DELAY),
-            icd11: debounce(performSearch, DEBOUNCE_DELAY),
-            loinc: debounce(performSearch, DEBOUNCE_DELAY)
-        };
-
-        // Attach event listeners to each input
-        Object.keys(inputs).forEach(system => {
-            inputs[system].addEventListener('input', (e) => {
-                debouncedSearch[system](system, e.target.value);
+        inputs.forEach(input => {
+            const debouncedSearch = debounce(search, 300);
+            input.addEventListener('input', (e) => {
+                const system = e.target.getAttribute('data-system');
+                debouncedSearch(system, e.target.value);
             });
         });
-
     </script>
 </body>
 </html>
+

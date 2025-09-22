@@ -59,15 +59,30 @@ def search_for_loinc_terms(term: str, db: Session = Depends(get_db)):
 
 # --- Mapping Endpoint ---
 
-@app.get("/map/namaste/{namaste_code}", response_model=schemas.ConceptMap)
-def get_mapping_by_namaste_code(namaste_code: str, db: Session = Depends(get_db)):
-    mapping = crud.get_mapping_for_namaste_code(db=db, namaste_code=namaste_code)
+@app.get("/map", response_model=schemas.ConceptMapResponse)
+def get_mapping(namaste_code: str, namaste_system: str, db: Session = Depends(get_db)):
+    """
+    Retrieves the ICD-11 mapping for a specific NAMASTE code and system.
+    """
+    mapping = crud.get_mapping_for_namaste_code(
+        db=db, 
+        namaste_code=namaste_code, 
+        namaste_system=namaste_system
+    )
+    
     if mapping is None:
         raise HTTPException(
             status_code=404, 
-            detail=f"No mapping found for NAMASTE code: {namaste_code}"
+            detail=f"No mapping found for NAMASTE code '{namaste_code}' in system '{namaste_system}'"
         )
-    return mapping
+    
+    # We need to rename the DB model fields to match the Pydantic schema
+    response_data = {
+        "map_relationship": mapping.map_relationship,
+        "source_term": mapping.namaste_term,
+        "target_term": mapping.icd_term
+    }
+    return response_data
 
 # --- FHIR and Secure Endpoints ---
 
