@@ -32,21 +32,20 @@ class LoincTerm(Base):
     term = Column(String)
 
 
-# FINAL CORRECTED VERSION of ConceptMap
 class ConceptMap(Base):
     __tablename__ = "concept_map"
 
     id = Column(Integer, primary_key=True, index=True)
-    
-    # The ForeignKey now points to the simple 'id' of the NamasteTerm
     namaste_id = Column(Integer, ForeignKey("namaste_terms.id"), index=True)
-    
-    # Mappings to other code systems
     icd_code = Column(String, ForeignKey("icd_terms.code"), nullable=True)
     snomed_code = Column(String, ForeignKey("snomed_terms.code"), nullable=True)
     loinc_code = Column(String, ForeignKey("loinc_terms.code"), nullable=True)
-    
     map_relationship = Column(String, default='equivalent')
+
+    # --- NEW COLUMN ---
+    # Status can be 'auto_generated', 'reviewed', 'rejected'
+    status = Column(String, default='auto_generated', index=True)
+    # ------------------
 
     # Relationships for easier data access
     namaste_term = relationship("NamasteTerm")

@@ -84,6 +84,103 @@ def get_mapping(namaste_code: str, namaste_system: str, db: Session = Depends(ge
     }
     return response_data
 
+@app.get("/map/reverse", response_model=List[schemas.NamasteTerm])
+def get_reverse_mapping(icd_code: str, db: Session = Depends(get_db)):
+    """
+    Performs a reverse lookup, finding all NAMASTE terms mapped 
+    to a given ICD-11 code.
+    """
+    namaste_terms = crud.get_reverse_map_for_icd_code(db=db, icd_code=icd_code)
+    
+    if not namaste_terms:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"No NAMASTE terms found mapped to ICD-11 code: {icd_code}"
+        )
+        
+    return namaste_terms
+
+# --- Curation Endpoints ---
+
+# In app/main.py
+
+@app.get("/maps/unreviewed", response_model=List[schemas.ConceptMapResponse])
+def get_unreviewed_maps_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Get a list of all automatically generated maps that need human review.
+    """
+    maps_from_db = crud.get_unreviewed_maps(db, skip=skip, limit=limit)
+    
+    # --- THE FIX ---
+    # Manually transform each database object into the Pydantic response shape
+    response = []
+    for mapping in maps_from_db:
+        response.append({
+            "id": mapping.id,
+            "status": mapping.status,
+            "map_relationship": mapping.map_relationship,
+            "source_term": mapping.namaste_term,
+            "target_term": mapping.icd_term
+        })
+    # --- END FIX ---
+        
+    return response
+
+# In app/main.py
+@app.put("/maps/{map_id}", response_model=schemas.ConceptMapResponse)
+def update_map_endpoint(map_id: int, map_update: schemas.MapUpdate, db: Session = Depends(get_db)):
+    """
+    Approve or update a concept map.
+    """
+    updated_map = crud.update_map(
+        db, 
+        map_id=map_id, 
+        relationship=map_update.map_relationship, 
+        status=map_update.status
+    )
+    if updated_map is None:
+        raise HTTPException(status_code=404, detail="Map not found")
+    
+    # --- THE FIX ---
+    # Manually transform the DB object to match the Pydantic response schema
+    response_data = {
+        "id": updated_map.id,
+        "status": updated_map.status,
+        "map_relationship": updated_map.map_relationship,
+        "source_term": updated_map.namaste_term,
+        "target_term": updated_map.icd_term
+    }
+    return response_data
+    # --- END FIX ---
+
+@app.delete("/maps/{map_id}")
+def delete_map_endpoint(map_id: int, db: Session = Depends(get_db)):
+    """
+    Reject (delete) an incorrect concept map.
+    """
+    deleted_map = crud.delete_map(db, map_id=map_id)
+    if deleted_map is None:
+        raise HTTPException(status_code=404, detail="Map not found")
+    return {"status": "success", "message": "Map deleted"}
+
+# Add this to the Curation Endpoints section in app/main.py
+@app.get("/maps/by_status", response_model=List[schemas.ConceptMapResponse])
+def get_maps_by_status_endpoint(status: str = 'reviewed', skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+    """
+    Get a list of maps filtered by status (e.g., 'reviewed', 'auto_generated').
+    """
+    maps_from_db = crud.get_maps_by_status(db, status=status, skip=skip, limit=limit)
+    
+    response = []
+    for mapping in maps_from_db:
+        response.append({
+            "id": mapping.id,
+            "status": mapping.status,
+            "map_relationship": mapping.map_relationship,
+            "source_term": mapping.namaste_term,
+            "target_term": mapping.icd_term
+        })
+    return response
 # --- FHIR and Secure Endpoints ---
 
 @app.get("/fhir/condition/{term_id}")

@@ -81,6 +81,18 @@ The API is divided into two main categories.
 
 **Example:** `GET /map?namaste_code=A-2&namaste_system=unani`
 
+## Curation Interface
+
+This project includes a web-based tool for human experts to review, approve, and refine the automatically generated concept maps.
+
+* **Access the Tool:** Navigate to `http://localhost:8000/curation.html`
+* **Workflow:**
+    1.  The "Unreviewed" tab shows all maps with the status `auto_generated`.
+    2.  Review each map and choose to **Approve** (with an optional relationship change) or **Reject** (which deletes the map).
+    3.  Approved maps are moved to the "Reviewed" tab.
+
+With these two files in place, your project's documentation is now complete and professional. The next step is to enhance the Curation UI with search and pagination.
+
 ## Technology Stack
 
 * **Backend:** Python, FastAPI

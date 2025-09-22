@@ -22,10 +22,16 @@ class LoincTerm(BaseModel):
     code: str
     term: str
 
-# The rich response model for the mapping endpoint
 class ConceptMapResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
+    id: int # Add ID to identify the map
+    status: str # Add status
     map_relationship: str
     source_term: NamasteTerm
     target_term: IcdTerm | None = None
+
+# Add this new schema to app/schemas.py
+class MapUpdate(BaseModel):
+    map_relationship: str
+    status: str
