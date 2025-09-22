@@ -5,8 +5,7 @@ import csv
 import os
 import pandas as pd
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine # Import create_engine
-from app.database import engine # Keep this for the main app
+from sqlalchemy import create_engine
 from app.models import NamasteTerm, IcdTerm, ConceptMap
 
 # --------------------------------------------------------------------------
@@ -19,9 +18,7 @@ CLIENT_SECRET = "KmWdoiVii9wZhFPG7hF0AQyoh1Pnwco3MGzwmGf8hV0="
 TOKEN_URL = 'https://icdaccessmanagement.who.int/connect/token'
 API_BASE_URL = 'https://id.who.int/icd'
 OUTPUT_CSV_FILE = 'data/mappings/namaste_to_icd11.csv'
-# --- FIX: Add a local database URL ---
 LOCAL_DATABASE_URL = "postgresql://ayush:hackathon_secret@localhost/ayur_db"
-
 
 def get_access_token():
     """Authenticates with the server and retrieves an access token."""
@@ -37,10 +34,17 @@ def get_access_token():
         return None
 
 def search_icd_code(term, headers):
-    """Searches for a term in the ICD-11 MMS and returns the top result's code."""
+    """
+    Searches for a term specifically within the ICD-11 Traditional Medicine Module (Chapter 26).
+    """
     if not term or pd.isna(term): return None
     endpoint_url = f"{API_BASE_URL}/release/11/2025-01/mms/search"
-    params = {'q': term}
+    
+    # --- THE FIX ---
+    # Re-instating the chapter filter to search ONLY the Traditional Medicine module
+    params = {'q': term, 'chapterFilter': '26'}
+    # ---------------
+
     try:
         response = requests.get(endpoint_url, headers=headers, params=params, timeout=20)
         if response.status_code == 200:
@@ -115,12 +119,12 @@ def ingest_map_from_csv(db_session):
     print("Processing and preparing maps for ingestion...")
     for _, row in map_df.iterrows():
         namaste_term = db_session.query(NamasteTerm).filter_by(code=row['namaste_code'], system=row['namaste_system']).first()
-        icd_term = db_session.query(IcdTerm).filter_by(code=row['icd_code']).first()
-
-        if namaste_term and icd_term:
+        # We assume the ICD code from the map is correct and don't need to validate it against icd_terms
+        # This is because Chapter 26 codes might not be in the main linearization file
+        if namaste_term:
             new_maps.append({
                 "namaste_id": namaste_term.id,
-                "icd_code": icd_term.code,
+                "icd_code": row['icd_code'],
                 "map_relationship": row['relationship']
             })
     
@@ -134,7 +138,6 @@ def ingest_map_from_csv(db_session):
 
 def main():
     """Main pipeline controller."""
-    # --- FIX: Use a local engine when running the script directly ---
     local_engine = create_engine(LOCAL_DATABASE_URL)
     Session = sessionmaker(bind=local_engine)
     db_session = Session()
@@ -158,3 +161,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

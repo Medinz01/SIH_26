@@ -22,6 +22,13 @@ class LoincTerm(BaseModel):
     code: str
     term: str
 
+class SnomedTerm(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    code: str
+    term: str
+
 class ConceptMapResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
