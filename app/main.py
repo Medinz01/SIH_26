@@ -4,13 +4,14 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 
 from . import crud, models, schemas, fhir_converter, fhir_utils
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="AyurFHIR Bridge")
+app = FastAPI(title="AyushBridge")
 
 # --- Security Setup ---
 API_KEY_NAME = "X-API-Key"
@@ -162,6 +163,31 @@ def fhir_translate(code: str, system: str, db: Session = Depends(get_db)):
         mapping.map_relationship
     )
     return fhir_concept_map.dict(exclude_none=True)
+
+@app.get("/fhir/condition/{term_id}")
+def generate_fhir_condition(term_id: int, db: Session = Depends(get_db)):
+    """
+    Finds a NAMASTE term and its corresponding map, then generates a
+    doubly-coded FHIR Condition resource.
+    """
+    # Find the NAMASTE term by its primary ID
+    db_term = crud.get_term_by_id(db=db, term_id=term_id)
+    if db_term is None:
+        raise HTTPException(status_code=404, detail="Term not found")
+
+    # Now, efficiently find the map associated with this term's ID
+    db_map = (
+        db.query(models.ConceptMap)
+        .options(joinedload(models.ConceptMap.icd_term))
+        .filter(models.ConceptMap.namaste_id == term_id)
+        .first()
+    )
+
+    # Pass BOTH the term and its map (which can be None) to the converter
+    fhir_resource = fhir_converter.create_fhir_condition(db_term, db_map)
+    
+    # Return the dictionary version of the FHIR resource
+    return fhir_resource.dict(exclude_none=True)
 
 # --- Secure Bundle Upload (Unchanged) ---
 @app.post("/bundle")

@@ -19,6 +19,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://ayush:hackathon_secret@db/ayur_db
+      - APP_ENV=docker
     depends_on:
       - db
 

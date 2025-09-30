@@ -3,34 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AyurFHIR Bridge - Curation Tool</title>
+    <title>AyushBridge - Curation Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .card {
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: all 0.2s ease-in-out;
-        }
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-            border: 1px solid transparent;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn-approve { background-color: #10B981; color: white; border-color: #059669;}
-        .btn-approve:hover { background-color: #059669; }
-        .btn-reject { background-color: #EF4444; color: white; border-color: #DC2626;}
-        .btn-reject:hover { background-color: #DC2626; }
-        .btn-page { background-color: #EFF6FF; color: #3B82F6; border-color: #BFDBFE; }
-        .btn-page:hover { background-color: #DBEAFE; }
-        .btn-page:disabled { background-color: #F3F4F6; color: #9CA3AF; border-color: #E5E7EB; cursor: not-allowed; }
         .tab {
             padding: 0.75rem 1.5rem;
             cursor: pointer;
@@ -38,56 +14,62 @@
             color: #6B7280;
         }
         .tab.active {
-            border-bottom-color: #3B82F6;
-            color: #1E40AF;
+            border-bottom-color: #4f46e5;
+            color: #3730a3;
             font-weight: 600;
         }
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-slate-800">
 
-    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
-        <header class="text-center mb-4">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Mapping Curation Tool</h1>
-            <p class="text-md text-gray-600 mt-2">Review and manage automatically generated concept maps.</p>
+    <!-- NEW: Added Header Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-slate-200">
+        <nav class="container mx-auto px-4 lg:px-8 flex items-center justify-between h-16">
+            <a href="/" class="text-lg font-bold text-indigo-700">AyushBridge</a>
+            <div class="flex items-center gap-4">
+                 <a href="/" class="hidden sm:inline-block bg-white text-slate-700 font-semibold px-4 py-2 rounded-md border border-slate-300 hover:bg-slate-100 transition">Live Demo</a>
+                <a href="/docs" target="_blank" class="hidden sm:inline-block bg-indigo-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-indigo-700 transition">API Docs</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Mapping Curation Hub</h1>
+            <p class="text-md text-slate-600 mt-2">Review, approve, and refine automatically generated concept maps.</p>
         </header>
 
-        <div class="border-b border-gray-200 mb-6">
+        <div class="border-b border-slate-200 mb-6">
             <nav class="flex -mb-px" aria-label="Tabs">
                 <button onclick="switchTab('auto_generated')" id="tab-auto_generated" class="tab active">Unreviewed</button>
                 <button onclick="switchTab('reviewed')" id="tab-reviewed" class="tab">Reviewed</button>
             </nav>
         </div>
 
-        <!-- Search Bar -->
-        <div class="mb-6">
-            <input type="text" id="searchInput" placeholder="Search by NAMASTE term..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        <div class="mb-6 relative">
+             <input type="text" id="searchInput" placeholder="Search by NAMASTE term..." class="w-full p-3 pl-10 border border-slate-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+             <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         </div>
 
-        <div id="loader" class="text-center py-8">
-             <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p class="mt-2 text-gray-500">Loading maps...</p>
+        <div id="loader" class="text-center py-12">
+             <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+             <p class="mt-2 text-slate-500">Loading maps...</p>
         </div>
 
-        <div id="curation-card-container" class="space-y-4"></div>
+        <div id="curation-card-container" class="space-y-6"></div>
 
-        <div id="empty-state" class="hidden text-center py-12 card">
-            <h2 class="text-xl font-semibold text-gray-700">No Maps Found</h2>
-            <p id="empty-state-message" class="text-gray-500 mt-2"></p>
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-lg border border-slate-200">
+            <h2 class="text-xl font-semibold text-slate-700">No Maps Found</h2>
+            <p id="empty-state-message" class="text-slate-500 mt-2"></p>
         </div>
         
-        <!-- Pagination Controls -->
         <div id="pagination-controls" class="hidden mt-8 flex items-center justify-between">
-            <button id="prev-page" class="btn btn-page">Previous</button>
-            <span id="page-info" class="text-sm text-gray-600"></span>
-            <button id="next-page" class="btn btn-page">Next</button>
+            <button id="prev-page" class="bg-white text-slate-700 font-semibold px-4 py-2 rounded-md border border-slate-300 hover:bg-slate-100 transition disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+            <span id="page-info" class="text-sm text-slate-600 font-medium"></span>
+            <button id="next-page" class="bg-white text-slate-700 font-semibold px-4 py-2 rounded-md border border-slate-300 hover:bg-slate-100 transition disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
         </div>
-
-    </div>
+    </main>
 
 <script>
     const API_URL = window.location.origin;
@@ -104,7 +86,9 @@
     let state = {
         currentTab: 'auto_generated',
         currentPage: 1,
-        itemsPerPage: 10,
+        // --- THE CHANGE: Updated items per page ---
+        itemsPerPage: 5,
+        // ----------------------------------------
         totalItems: 0,
         totalPages: 1,
         searchTerm: ''
@@ -118,23 +102,23 @@
 
         try {
             const skip = (state.currentPage - 1) * state.itemsPerPage;
+            const countUrl = `${API_URL}/maps/count?status=${state.currentTab}&search=${encodeURIComponent(state.searchTerm)}`;
+            const mapsUrl = `${API_URL}/maps/by_status?status=${state.currentTab}&search=${encodeURIComponent(state.searchTerm)}&skip=${skip}&limit=${state.itemsPerPage}`;
+
+            const [countResponse, mapsResponse] = await Promise.all([fetch(countUrl), fetch(mapsUrl)]);
             
-            // Fetch total count first
-            const countResponse = await fetch(`${API_URL}/maps/count?status=${state.currentTab}&search=${state.searchTerm}`);
             const countData = await countResponse.json();
             state.totalItems = countData.total_count;
-            state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
-
-            // Fetch map data
-            const mapsResponse = await fetch(`${API_URL}/maps/by_status?status=${state.currentTab}&search=${state.searchTerm}&skip=${skip}&limit=${state.itemsPerPage}`);
-            if (!mapsResponse.ok) throw new Error('Network response was not ok');
+            state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage) || 1;
+            
+            if (!mapsResponse.ok) throw new Error('Failed to fetch maps');
             const maps = await mapsResponse.json();
             
             loader.classList.add('hidden');
 
             if (maps.length === 0) {
                 emptyStateMessage.textContent = state.searchTerm 
-                    ? `No maps found for your search term.`
+                    ? `No maps found matching your search.`
                     : (state.currentTab === 'auto_generated' ? "No more maps to review. Great job!" : "No maps have been reviewed yet.");
                 emptyState.classList.remove('hidden');
             } else {
@@ -164,13 +148,12 @@
         fetchData();
     }
     
-    // ... createCardHTML, handleApprove, handleReject functions remain the same ...
     function createCardHTML(map) {
         const isUnreviewed = map.status === 'auto_generated';
         const actionsHTML = `
             <div class="flex items-center gap-2">
-                <label for="relationship-${map.id}" class="text-sm font-medium">Relationship:</label>
-                <select id="relationship-${map.id}" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <label for="relationship-${map.id}" class="text-sm font-medium text-slate-600">Relationship:</label>
+                <select id="relationship-${map.id}" class="rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-1">
                     <option value="equivalent" ${map.map_relationship === 'equivalent' ? 'selected' : ''}>Equivalent</option>
                     <option value="broader" ${map.map_relationship === 'broader' ? 'selected' : ''}>Broader</option>
                     <option value="narrower" ${map.map_relationship === 'narrower' ? 'selected' : ''}>Narrower</option>
@@ -178,30 +161,31 @@
                 </select>
             </div>
             <div class="flex gap-3">
-                <button class="btn btn-reject" onclick="handleReject(${map.id})">Reject</button>
-                <button class="btn btn-approve" onclick="handleApprove(${map.id})">Approve</button>
+                <button class="bg-white text-red-600 font-semibold px-4 py-2 rounded-md border border-red-300 hover:bg-red-50 transition" onclick="handleReject(${map.id})">Reject</button>
+                <button class="bg-green-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-700 transition" onclick="handleApprove(${map.id})">Approve</button>
             </div>
         `;
-        const statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full ${map.status === 'reviewed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${map.status.replace('_', ' ')}</span>`;
+        const statusBadge = `<span class="px-2.5 py-0.5 text-xs font-medium rounded-full ${map.status === 'reviewed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${map.status.replace('_', ' ')}</span>`;
+        
         return `
-        <div class="card p-5" id="map-card-${map.id}">
-             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-gray-800">Concept Map #${map.id}</h3>
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200" id="map-card-${map.id}">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-bold text-lg text-slate-800">Concept Map #${map.id}</h3>
                 ${statusBadge}
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                <div class="bg-gray-50 p-4 rounded-lg border">
-                    <h4 class="font-semibold text-gray-700">Source (NAMASTE)</h4>
-                    <p class="text-xl font-light text-blue-700 mt-2">${map.source_term.term}</p>
-                    <div class="mt-3 text-sm text-gray-500">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h4 class="font-semibold text-slate-700">Source (NAMASTE)</h4>
+                    <p class="text-lg text-indigo-700 mt-2">${map.source_term.term}</p>
+                    <div class="mt-3 text-sm text-slate-500">
                         <p><span class="font-semibold">Code:</span> ${map.source_term.code}</p>
                         <p><span class="font-semibold">System:</span> ${map.source_term.system}</p>
                     </div>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg border">
-                    <h4 class="font-semibold text-gray-700">Target (ICD-11)</h4>
-                    <p class="text-xl font-light text-green-700 mt-2">${map.target_term ? map.target_term.term : 'N/A'}</p>
-                    <div class="mt-3 text-sm text-gray-500">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h4 class="font-semibold text-slate-700">Target (ICD-11)</h4>
+                    <p class="text-lg text-green-700 mt-2">${map.target_term ? map.target_term.term : 'N/A'}</p>
+                    <div class="mt-3 text-sm text-slate-500">
                         <p><span class="font-semibold">Code:</span> ${map.target_term ? map.target_term.code : 'N/A'}</p>
                     </div>
                 </div>
@@ -210,6 +194,7 @@
         </div>
         `;
     }
+    
     async function handleApprove(mapId) {
         const selectElement = document.getElementById(`relationship-${mapId}`);
         const relationship = selectElement.value;
@@ -226,8 +211,9 @@
             alert('Could not approve the map.');
         }
     }
+
     async function handleReject(mapId) {
-        if (!confirm('Are you sure you want to reject and delete this map?')) return;
+        if (!confirm('Are you sure you want to reject and delete this map? This action cannot be undone.')) return;
         try {
             const response = await fetch(`${API_URL}/maps/${mapId}`, { method: 'DELETE' });
             if (!response.ok) throw new Error('Failed to reject map');
@@ -238,7 +224,6 @@
         }
     }
 
-    // Event Listeners
     let searchTimeout;
     searchInput.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
@@ -246,7 +231,7 @@
             state.searchTerm = e.target.value;
             state.currentPage = 1;
             fetchData();
-        }, 500); // Debounce search
+        }, 400); 
     });
 
     prevPageBtn.addEventListener('click', () => {

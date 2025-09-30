@@ -1,37 +1,39 @@
-# Replace the contents of app/fhir_converter.py
 from fhir.resources.condition import Condition
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
-from fhir.resources.reference import Reference
-from sqlalchemy.orm import Session
+from . import models
 
-from . import schemas, crud
+def create_fhir_condition(db_term: models.NamasteTerm, db_map: models.ConceptMap | None):
+    """
+    Creates a FHIR Condition resource from a NAMASTE term and its optional map.
+    This function now purely handles formatting.
+    """
 
-def create_fhir_condition(db: Session, db_term: schemas.NamasteTerm) -> Condition:
-    mapped_icd = crud.get_mapping_for_namaste_code(db, namaste_code=db_term.code)
-
-    condition = Condition.construct()
-    condition.clinicalStatus = CodeableConcept(
-        coding=[Coding(system="http://terminology.hl7.org/CodeSystem/condition-clinical", code="active")]
-    )
-
-    namaste_coding = Coding(
-        system="https://www.namaste-ayush.in/codes",
+    # 1. Create the primary NAMASTE coding
+    namaste_coding = Coding.construct(
+        system=f"http://nph.gov.in/namaste/{db_term.system}",
         code=db_term.code,
         display=db_term.term
     )
-
     codings = [namaste_coding]
 
-    if mapped_icd:
-        icd_coding = Coding(
+    # 2. If a map exists and has a target ICD term, add the ICD-11 coding
+    if db_map and db_map.icd_term:
+        icd_coding = Coding.construct(
             system="http://id.who.int/icd/release/11/mms",
-            code=mapped_icd.icd_code,
-            display=mapped_icd.icd_display
+            code=db_map.icd_term.code,
+            display=db_map.icd_term.term
         )
         codings.append(icd_coding)
 
-    condition.code = CodeableConcept(coding=codings, text=db_term.term)
-    condition.subject = Reference(reference="Patient/123", display="Test Patient")
+    condition_code = CodeableConcept.construct(coding=codings, text=db_term.term)
 
+    condition = Condition.construct(
+        clinicalStatus=CodeableConcept.construct(coding=[Coding.construct(
+            system="http://terminology.hl7.org/CodeSystem/condition-clinical", 
+            code="active"
+        )]),
+        code=condition_code
+        # In a real EMR, a subject (patient) reference would be added here
+    )
     return condition

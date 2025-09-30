@@ -3,93 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AyurFHIR Bridge - Terminology Search & Map</title>
+    <title>AyushBridge - Terminology Service</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* A little custom style for better UX */
         .search-results::-webkit-scrollbar { width: 8px; }
         .search-results::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
         .search-results::-webkit-scrollbar-thumb { background: #888; border-radius: 10px;}
         .search-results::-webkit-scrollbar-thumb:hover { background: #555; }
         .result-item:hover { background-color: #eef2ff; }
-        #mapping-result { display: none; } /* Hidden by default */
+        #mapping-result, #fhir-result, #bundle-result { display: none; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-slate-50 font-sans">
 
-    <div class="container mx-auto p-4 md:p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-indigo-700">AyurFHIR Bridge</h1>
-            <p class="text-lg text-gray-600 mt-2">Search and Map Medical Terminologies</p>
-        </header>
-
-        <!-- Search Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- NAMASTE Search Column -->
-            <div>
-                <label for="namaste-search" class="block text-sm font-medium text-gray-700 mb-1">NAMASTE (Ayurveda, Siddha, Unani)</label>
-                <input type="text" id="namaste-search" data-system="namaste" placeholder="e.g., Jvara, Fever..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <div id="namaste-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-gray-200"></div>
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-slate-200">
+        <nav class="container mx-auto px-4 lg:px-8 flex items-center justify-between h-16">
+            <a href="/" class="text-lg font-bold text-indigo-700">AyushBridge</a>
+            <div class="flex items-center gap-4">
+                 <a href="/curation.html" class="hidden sm:inline-block bg-white text-slate-700 font-semibold px-4 py-2 rounded-md border border-slate-300 hover:bg-slate-100 transition">Curation Tool</a>
+                <a href="/docs" target="_blank" class="hidden sm:inline-block bg-indigo-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-indigo-700 transition">API Docs</a>
             </div>
-            <!-- ICD-11 Search Column -->
-            <div>
-                <label for="icd11-search" class="block text-sm font-medium text-gray-700 mb-1">ICD-11</label>
-                <input type="text" id="icd11-search" data-system="icd11" placeholder="e.g., Neoplasms, Injury..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <div id="icd11-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-gray-200"></div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 lg:p-8">
+
+        <!-- Hero/Landing Section -->
+        <section class="text-center py-16 md:py-24">
+            <h1 class="text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+                Connecting Traditional and Modern Medicine
+            </h1>
+            <p class="mt-6 max-w-2xl mx-auto text-lg text-slate-600">
+                AyushBridge is an open-source terminology microservice that provides a high-performance API to search, map, and translate between traditional Ayush terminologies (NAMASTE) and global standards like ICD-11 and LOINC.
+            </p>
+            <div class="mt-8 flex justify-center gap-4">
+                <a href="#live-demo" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition">Try the Live Demo</a>
+                <a href="/curation.html" class="bg-white text-slate-700 font-semibold px-6 py-3 rounded-md border border-slate-300 hover:bg-slate-100 transition">Go to Curation</a>
             </div>
-            <!-- LOINC Search Column -->
-            <div>
-                <label for="loinc-search" class="block text-sm font-medium text-gray-700 mb-1">LOINC</label>
-                <input type="text" id="loinc-search" data-system="loinc" placeholder="e.g., Blood pressure, Glucose..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <div id="loinc-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-gray-200"></div>
+        </section>
+
+        <!-- Live Demo Section -->
+        <section id="live-demo" class="pt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800">Live API Demo</h2>
+                <p class="text-slate-500 mt-2">Interact with the terminology service in real-time.</p>
             </div>
-        </div>
 
-        <!-- Mapping Result Section -->
-        <div id="mapping-result" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-             <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Concept Map</h2>
-             <div class="flex flex-col md:flex-row items-stretch justify-center gap-4">
-                <!-- Source Term Card -->
-                <div class="flex-1 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                    <h3 class="font-bold text-indigo-800">Source Term (NAMASTE)</h3>
-                    <p id="map-source-term" class="text-lg text-gray-900 mt-1"></p>
-                    <p id="map-source-code" class="text-sm text-gray-500 font-mono"></p>
-                    <p id="map-source-system" class="text-xs text-indigo-500 mt-1 capitalize"></p>
+            <!-- Search UI -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div>
+                    <label for="namaste-search" class="block text-sm font-medium text-slate-700 mb-1">NAMASTE (Ayurveda, Siddha, Unani)</label>
+                    <input type="text" id="namaste-search" data-system="namaste" placeholder="e.g., Agni..." class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <div id="namaste-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-slate-200"></div>
                 </div>
-                
-                <!-- Arrow Icon -->
-                <div class="flex items-center justify-center text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                <div>
+                    <label for="icd11-search" class="block text-sm font-medium text-slate-700 mb-1">ICD-11</label>
+                    <input type="text" id="icd11-search" data-system="icd11" placeholder="e.g., Neoplasms, Injury..." class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <div id="icd11-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-slate-200"></div>
                 </div>
+                <div>
+                    <label for="loinc-search" class="block text-sm font-medium text-slate-700 mb-1">LOINC</label>
+                    <input type="text" id="loinc-search" data-system="loinc" placeholder="e.g., Blood pressure..." class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <div id="loinc-results" class="search-results mt-2 h-64 overflow-y-auto bg-white rounded-md border border-slate-200"></div>
+                </div>
+            </div>
 
-                <!-- Target Term Card -->
-                <div class="flex-1 bg-green-50 p-4 rounded-lg border border-green-200">
-                    <h3 class="font-bold text-green-800">Target Term (ICD-11)</h3>
-                    <p id="map-target-term" class="text-lg text-gray-900 mt-1"></p>
-                    <p id="map-target-code" class="text-sm text-gray-500 font-mono"></p>
-                </div>
-             </div>
-             <p id="map-relationship" class="text-center text-sm text-gray-500 mt-4"></p>
-        </div>
-        <div id="mapping-not-found" class="hidden text-center text-gray-500 mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-            No pre-defined map found for this term.
-        </div>
+            <!-- Mapping & FHIR Result Section -->
+            <div id="mapping-result" class="bg-white p-6 rounded-lg shadow-lg border border-slate-200">
+                 <h2 class="text-2xl font-bold text-slate-800 mb-4 text-center">Concept Map</h2>
+                 <div class="flex flex-col md:flex-row items-stretch justify-center gap-4">
+                    <div class="flex-1 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                        <h3 class="font-bold text-indigo-800">Source Term (NAMASTE)</h3>
+                        <p id="map-source-term" class="text-lg text-slate-900 mt-1"></p>
+                        <p id="map-source-code" class="text-sm text-slate-500 font-mono"></p>
+                        <p id="map-source-system" class="text-xs text-indigo-500 mt-1 capitalize"></p>
+                    </div>
+                    <div class="flex items-center justify-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                    </div>
+                    <div class="flex-1 bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h3 class="font-bold text-green-800">Target Term (ICD-11)</h3>
+                        <p id="map-target-term" class="text-lg text-slate-900 mt-1"></p>
+                        <p id="map-target-code" class="text-sm text-slate-500 font-mono"></p>
+                    </div>
+                 </div>
+                 <p id="map-relationship" class="text-center text-sm text-slate-500 mt-4"></p>
+                 <div class="mt-6 text-center">
+                    <button id="fhir-gen-button" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-md hover:bg-blue-700 transition">Generate FHIR Condition</button>
+                 </div>
+            </div>
+            
+            <div id="mapping-not-found" class="hidden text-center text-slate-500 mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                No pre-defined map found for this term.
+            </div>
+            
+            <div id="fhir-result" class="mt-8">
+                <h3 class="text-xl font-bold text-slate-800">Generated FHIR Condition Resource</h3>
+                <pre class="mt-2 p-4 bg-slate-800 text-slate-100 rounded-lg text-sm overflow-x-auto"><code id="fhir-output"></code></pre>
+            </div>
+        </section>
 
-    </div>
+        <!-- NEW: FHIR Integration Demo Section -->
+        <section id="fhir-integration-demo" class="pt-16 mt-16 border-t border-slate-200">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800">FHIR Integration Demo</h2>
+                <p class="text-slate-500 mt-2">Simulate an EMR uploading a doubly-coded diagnosis.</p>
+            </div>
+            <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-2">1. Sample FHIR Bundle</h3>
+                    <p class="text-sm text-slate-500 mb-4">This is a sample FHIR Bundle containing a `Condition` with both a NAMASTE and an ICD-11 code.</p>
+                    <pre class="p-4 bg-slate-800 text-slate-100 rounded-lg text-xs overflow-x-auto h-96"><code id="bundle-payload"></code></pre>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-2">2. Secure Upload</h3>
+                    <p class="text-sm text-slate-500 mb-4">Provide the API Key to authenticate the request, simulating an ABHA-linked token.</p>
+                    <div class="mb-4">
+                        <label for="api-key-input" class="block text-sm font-medium text-slate-700 mb-1">X-API-Key</label>
+                        <input type="text" id="api-key-input" class="w-full p-2 font-mono border border-slate-300 rounded-md shadow-sm" value="abhatoken_for_sih_demo_25026">
+                    </div>
+                    <button id="bundle-upload-button" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-md hover:bg-indigo-700 transition">Upload FHIR Bundle</button>
+                    
+                    <div id="bundle-result" class="mt-6">
+                         <h3 class="font-semibold text-slate-800 mb-2">3. Server Response</h3>
+                         <pre class="p-4 bg-slate-100 text-slate-600 rounded-lg text-sm border border-slate-200"><code id="bundle-response"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script>
         const inputs = document.querySelectorAll('input[type="text"]');
+        let currentNamasteTermId = null;
         
-        // Debounce function to limit API calls while typing
         const debounce = (func, delay) => {
             let timeoutId;
             return (...args) => {
                 clearTimeout(timeoutId);
-                timeoutId = setTimeout(() => {
-                    func.apply(this, args);
-                }, delay);
+                timeoutId = setTimeout(() => { func.apply(this, args); }, delay);
             };
         };
 
@@ -99,81 +153,181 @@
                 resultsContainer.innerHTML = '';
                 return;
             }
-
-            resultsContainer.innerHTML = '<div class="p-4 text-gray-500">Searching...</div>';
-            
+            resultsContainer.innerHTML = '<div class="p-4 text-slate-500">Searching...</div>';
             try {
                 const response = await fetch(`/search/${system}?term=${query}`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
 
                 if (data.length === 0) {
-                    resultsContainer.innerHTML = '<div class="p-4 text-gray-500">No results found.</div>';
-                    return;
+                    resultsContainer.innerHTML = '<div class="p-4 text-slate-500">No results found.</div>';
+                } else {
+                    resultsContainer.innerHTML = data.map(item => `
+                        <div class="result-item p-3 border-b border-slate-200 cursor-pointer" 
+                             ${system === 'namaste' ? `onclick="handleNamasteClick(${item.id}, '${item.code}', '${item.system}')"` : ''}>
+                            <p class="font-semibold text-slate-800">${item.term}</p>
+                            <p class="text-sm text-slate-500 font-mono">${item.code} ${system === 'namaste' ? `<span class="capitalize text-indigo-600">(${item.system})</span>`: ''}</p>
+                        </div>
+                    `).join('');
                 }
-                
-                resultsContainer.innerHTML = data.map(item => `
-                    <div class="result-item p-3 border-b border-gray-200 cursor-pointer" 
-                         ${system === 'namaste' ? `onclick="fetchMap('${item.code}', '${item.system}')"` : ''}>
-                        <p class="font-semibold text-gray-800">${item.term}</p>
-                        <p class="text-sm text-gray-500 font-mono">${item.code} ${system === 'namaste' ? `<span class="capitalize text-indigo-600">(${item.system})</span>`: ''}</p>
-                    </div>
-                `).join('');
-
             } catch (error) {
                 console.error('Search error:', error);
                 resultsContainer.innerHTML = '<div class="p-4 text-red-500">Error fetching results.</div>';
             }
         };
 
+        const handleNamasteClick = (termId, termCode, termSystem) => {
+            currentNamasteTermId = termId;
+            fetchMap(termCode, termSystem);
+            document.getElementById('fhir-result').style.display = 'none';
+        };
+
         const fetchMap = async (namasteCode, namasteSystem) => {
             const mappingResultDiv = document.getElementById('mapping-result');
             const notFoundDiv = document.getElementById('mapping-not-found');
-            
             mappingResultDiv.style.display = 'none';
             notFoundDiv.classList.add('hidden');
 
             try {
                 const response = await fetch(`/map?namaste_code=${encodeURIComponent(namasteCode)}&namaste_system=${encodeURIComponent(namasteSystem)}`);
-                
                 if (!response.ok) {
-                     if(response.status === 404) {
-                        notFoundDiv.classList.remove('hidden');
-                     }
-                     throw new Error('Mapping not found or server error');
+                     if(response.status === 404) { notFoundDiv.classList.remove('hidden'); }
+                     throw new Error('Mapping not found');
                 }
-
                 const data = await response.json();
                 
-                // Populate and show the mapping card
                 document.getElementById('map-source-term').textContent = data.source_term.term;
                 document.getElementById('map-source-code').textContent = data.source_term.code;
                 document.getElementById('map-source-system').textContent = data.source_term.system;
-
-                if(data.target_term) {
-                    document.getElementById('map-target-term').textContent = data.target_term.term;
-                    document.getElementById('map-target-code').textContent = data.target_term.code;
-                } else {
-                    document.getElementById('map-target-term').textContent = 'N/A';
-                    document.getElementById('map-target-code').textContent = 'N/A';
-                }
-
+                document.getElementById('map-target-term').textContent = data.target_term ? data.target_term.term : 'N/A';
+                document.getElementById('map-target-code').textContent = data.target_term ? data.target_term.code : 'N/A';
                 document.getElementById('map-relationship').textContent = `Relationship: ${data.map_relationship}`;
-
                 mappingResultDiv.style.display = 'block';
-
             } catch (error) {
                 console.error('Mapping fetch error:', error);
             }
         };
 
+        const generateFhir = async () => {
+            if (!currentNamasteTermId) return;
+            const fhirResultDiv = document.getElementById('fhir-result');
+            const fhirOutput = document.getElementById('fhir-output');
+            fhirOutput.textContent = 'Generating...';
+            fhirResultDiv.style.display = 'block';
+
+            try {
+                const response = await fetch(`/fhir/condition/${currentNamasteTermId}`);
+                if (!response.ok) throw new Error('FHIR generation failed');
+                const data = await response.json();
+                fhirOutput.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('FHIR generation error:', error);
+                fhirOutput.textContent = 'Error generating FHIR resource.';
+            }
+        };
+        
+        // --- NEW: FHIR Bundle Logic ---
+        const sampleBundle = {
+          "resourceType": "Bundle",
+          "id": "bundle-example",
+          "type": "transaction",
+          "entry": [
+            {
+              "fullUrl": "urn:uuid:860a3582-9d33-4286-9807-f2323a2b70f0",
+              "resource": {
+                "resourceType": "Patient",
+                "id": "patient-1",
+                "name": [{ "family": "Kumar", "given": ["Anjali"] }]
+              },
+              "request": { "method": "POST", "url": "Patient" }
+            },
+            {
+              "fullUrl": "urn:uuid:689a7732-51a3-48b4-8e33-c782b7f354a6",
+              "resource": {
+                "resourceType": "Encounter",
+                "status": "finished",
+                "class": { "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode", "code": "AMB" },
+                "subject": { "reference": "urn:uuid:860a3582-9d33-4286-9807-f2323a2b70f0" }
+              },
+              "request": { "method": "POST", "url": "Encounter" }
+            },
+            {
+              "fullUrl": "urn:uuid:4f217e57-49a3-4b68-8e0f-b0f3f2252cf4",
+              "resource": {
+                "resourceType": "Condition",
+                "clinicalStatus": {
+                  "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active" }]
+                },
+                "code": {
+                  "text": "Jvara mapped to Fever of unknown origin",
+                  "coding": [
+                    {
+                      "system": "http://nph.gov.in/namaste/ayurveda",
+                      "code": "AYU0123",
+                      "display": "Jvara (Fever)"
+                    },
+                    {
+                      "system": "http://id.who.int/icd/release/11/mms",
+                      "code": "1D40.0",
+                      "display": "Fever of unknown origin"
+                    }
+                  ]
+                },
+                "subject": { "reference": "urn:uuid:860a3582-9d33-4286-9807-f2323a2b70f0" }
+              },
+              "request": { "method": "POST", "url": "Condition" }
+            }
+          ]
+        };
+
+        const uploadFhirBundle = async () => {
+            const bundleResultDiv = document.getElementById('bundle-result');
+            const bundleResponseEl = document.getElementById('bundle-response');
+            const apiKey = document.getElementById('api-key-input').value;
+
+            bundleResponseEl.textContent = 'Uploading...';
+            bundleResultDiv.style.display = 'block';
+
+            if (!apiKey) {
+                bundleResponseEl.textContent = 'Error: API Key is required.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/bundle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify(sampleBundle)
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || 'Failed to upload bundle.');
+                
+                bundleResponseEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Bundle upload error:', error);
+                bundleResponseEl.textContent = `Error: ${error.message}`;
+            }
+        };
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('bundle-payload').textContent = JSON.stringify(sampleBundle, null, 2);
+        });
+
         inputs.forEach(input => {
             const debouncedSearch = debounce(search, 300);
-            input.addEventListener('input', (e) => {
+            input.addEventListener('input', e => {
                 const system = e.target.getAttribute('data-system');
                 debouncedSearch(system, e.target.value);
             });
         });
+
+        document.getElementById('fhir-gen-button').addEventListener('click', generateFhir);
+        document.getElementById('bundle-upload-button').addEventListener('click', uploadFhirBundle);
+
     </script>
 </body>
 </html>
